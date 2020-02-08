@@ -1,14 +1,12 @@
 @echo off
-SETLOCAL ENABLEDELAYEDEXPANSION
-set FILE_LIST=(CompatTelRunner.exe MRT.exe)
+set FILE_LIST=(%WINDIR%\system32\CompatTelRunner.exe %WINDIR%\system32\MRT.exe %WINDIR%\HelpPane.exe)
 for %%f in %FILE_LIST% do (
-	set EXE=%WINDIR%\system32\%%f
-	echo !EXE!
-	if exist !EXE! (
-		takeown /f !EXE!
-		icacls !EXE! /grant Administradores:F
-		del /f !EXE!
-		echo ^> deleted
+	echo %%f
+	if exist %%f (
+		taskkill /f /im %%~nxf
+		takeown /f %%f
+		icacls %%f /deny *S-1-1-0:(X^)
+		echo ^> blocked
 		echo.
 	)
 )
