@@ -1,0 +1,3 @@
+C:\WINDOWS\system32\CompatTelRunner.exe
+C:\WINDOWS\system32\MRT.exe
+C:\WINDOWS\HelpPane.exe
