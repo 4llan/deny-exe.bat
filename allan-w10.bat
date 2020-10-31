@@ -1,18 +1,41 @@
 @echo off
 setlocal
-set FILE_LIST=%~dp0%~n0.txt
-if exist %FILE_LIST% (
-	for /f "delims=" %%f in (%FILE_LIST%) do (
-		echo %%f
-		if exist %%f (
-			taskkill /f /im %%~nxf
-			takeown /f %%f
-			icacls %%f /deny *S-1-1-0:(X^)
-			echo ^> blocked
-			echo.
-		)
+if "%~1" == "" (
+	call :denyFileOrList "%~dp0%~n0.txt"
+	goto :EOF
+)
+
+:denyFileOrList
+if /I "%~x1" == ".txt" (
+	call :loadList "%~1"
+) else (
+	call :denyFile "%~1"
+)
+pause
+goto :EOF
+
+:loadList
+echo Loading from list: %1
+if exist %1 (
+	echo.
+	for /f "delims=" %%f in ('type "%~1"') do (
+		call :denyFile "%%~f"
 	)
 ) else (
-	echo "%FILE_LIST%" was not found
+	echo ^> The file was not found
+	echo.
 )
-REM pause
+goto :EOF
+
+:denyFile
+echo %1
+if exist %1 (
+	taskkill /f /im "%~nx1"
+	takeown /f "%~1"
+	call icacls "%~1" /deny *S-1-1-0:(X^)
+	echo.
+) else (
+	echo ^> The file was not found
+	echo.
+)
+goto :EOF
